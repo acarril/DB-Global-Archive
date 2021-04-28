@@ -22,9 +22,9 @@ indices = [1, 2, 3, 6, 14, 20] + list(range(45, 62)) + [74, 76, 84, 90, 91, 116,
 indices = [x - 1 for x in indices]  # because python is 0-indexed
 
 # Request list index
-# url = 'https://dss2.princeton.edu/dandb/dandbarchives/LINK/AP/'
+base_url = 'https://vpn.princeton.edu/https-443/'
+url = base_url + sys.argv[1].replace('https://', '')
 # url = 'https://vpn.princeton.edu/https-443/dss2.princeton.edu/dandb/dandbarchives/LINK/AP/'
-url = sys.argv[1]
 cj = browser_cookie3.firefox()
 r = requests.get(url, cookies = cj)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
