@@ -7,7 +7,7 @@ The data is stored in Princeton servers, and this script will only work if you a
 
 This script has been tested on Windows 10, macOS 10.15, Manjaro Linux and Raspberry Pi OS.
 Before running, make sure your machine satisfies the following requirements:
-1. Firefox (note: it should work on Chrome, but it has not been tested)
+1. [Firefox](https://www.mozilla.org/firefox/) (note: it should work on Chrome, but it has not been tested)
 2. Python 3
 3. Python 3 modules: [browser_cookie3](https://pypi.org/project/browser-cookie3/), [beautifulsoup4](https://pypi.org/project/beautifulsoup4/), [pandas](https://pypi.org/project/pandas/), [progressbar2](https://pypi.org/project/progressbar2/)
 
@@ -32,4 +32,5 @@ cd DB-Global-Archive
 ```sh
 python3 DB_scrape.py 'https://dss2.princeton.edu/dandb/dandbarchives/LINK/AF/'
 ```
+3. The script will output its progress. Once it has finished, it will write a `csv` file in the directory (e.g. `AF.csv`).
 
