@@ -1,3 +1,4 @@
+import sys
 import requests
 import browser_cookie3
 import bs4
@@ -22,7 +23,8 @@ indices = [x - 1 for x in indices]  # because python is 0-indexed
 
 # Request list index
 # url = 'https://dss2.princeton.edu/dandb/dandbarchives/LINK/AP/'
-url = 'https://vpn.princeton.edu/https-443/dss2.princeton.edu/dandb/dandbarchives/LINK/AF/'
+# url = 'https://vpn.princeton.edu/https-443/dss2.princeton.edu/dandb/dandbarchives/LINK/AP/'
+url = sys.argv[1]
 cj = browser_cookie3.firefox()
 r = requests.get(url, cookies = cj)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
@@ -38,4 +40,5 @@ for l in progressbar(soup.find_all(lambda tag: tag.name=='a' and tag['href'].end
     dfs.append(df)
 
 dfs = pd.concat(dfs)
-dfs.to_csv('AP.csv')
+fileout = url.split('/')[-2] + '.csv'
+dfs.to_csv(fileout)
