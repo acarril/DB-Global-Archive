@@ -9,11 +9,11 @@ import warnings
 warnings.filterwarnings("ignore", category=pd.errors.DtypeWarning)
 
 # Read, filter, and return dataframe
-def read_filter(filename, indices):
-    df = pd.read_csv(filename, sep = '\t', header = None, usecols = indices)
+def read_filter(file, indices):
+    df = pd.read_csv(file, sep = '\t', header = None, usecols = indices)
     df = df[df[44].astype(str).apply(lambda x: x.isnumeric())]
     df = df[df[44].astype(str).astype(int).between(2000, 4000)]
-    df['date'] = filename.split('.')[3]
+    df['date'] = file.name.split('.')[3]
     return df
 
 # Create index list for relevant columns
@@ -21,7 +21,8 @@ indices = [1, 2, 3, 6, 14, 20] + list(range(45, 62)) + [74, 76, 84, 90, 91, 116,
 indices = [x - 1 for x in indices]  # because python is 0-indexed
 
 # Request list index
-url = 'https://dss2.princeton.edu/dandb/dandbarchives/LINK/AP/'
+# url = 'https://dss2.princeton.edu/dandb/dandbarchives/LINK/AP/'
+url = 'https://vpn.princeton.edu/https-443/dss2.princeton.edu/dandb/dandbarchives/LINK/AF/'
 cj = browser_cookie3.firefox()
 r = requests.get(url, cookies = cj)
 soup = bs4.BeautifulSoup(r.text, 'html.parser')
