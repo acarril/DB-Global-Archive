@@ -98,11 +98,11 @@ if writedisk:
     # Filter
     print('filtering data...')
     dfs = []
-    for file in progressbar(os.listdir('.'), redirect_stdout=True):
-        if file.endswith(".zip"):
-            print(file)
-            df = read_filter(file, indices, writedisk=True)
-            dfs.append(df)
+    zip_files = sorted([f for f in os.listdir('.') if f.endswith('.zip')])
+    for file in progressbar(zip_files, redirect_stdout=True):
+        print(file)
+        df = read_filter(file, indices, writedisk=True)
+        dfs.append(df)
 
     # Join and write
     print('joining files')
