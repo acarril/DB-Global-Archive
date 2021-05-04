@@ -10,7 +10,8 @@ from progressbar import progressbar
 import warnings
 warnings.filterwarnings("ignore", category=pd.errors.DtypeWarning)
 
-# Check option
+# Check 'writedisk' option
+# If not present, do everything in memory
 try:
     writedisk = sys.argv[2]
 except IndexError:
@@ -87,25 +88,43 @@ if not writedisk:
 # Download files, write them to disk, and join them separately
 if writedisk:
     # Download
-    print('downloading files...')
-    for l in soup.find_all(lambda tag: tag.name=='a' and tag['href'].endswith('.zip')):
-        filename = l['href']
-        if os.path.isfile(filename):
-            print(f"File {filename} exists")
-        else:
-            download(url, filename)
+    if len(sys.argv) == 3 or sys.argv[3] == 'download':
+        print('downloading files...')
+        for l in soup.find_all(lambda tag: tag.name=='a' and tag['href'].endswith('.zip')):
+            filename = l['href']
+            if os.path.isfile(filename):
+                print(f"File {filename} exists")
+            else:
+                download(url, filename)
 
     # Filter
-    print('filtering data...')
-    dfs = []
-    zip_files = sorted([f for f in os.listdir('.') if f.endswith('.zip')])
-    for file in progressbar(zip_files, redirect_stdout=True):
-        print(file)
-        df = read_filter(file, indices, writedisk=True)
-        dfs.append(df)
+    if len(sys.argv) == 3 or sys.argv[3] == 'filter':
+        print('filtering data...')
+        # dfs = []
+        zip_files = sorted([f for f in os.listdir('.') if f.endswith('.zip')])
+        csv_files = sorted([f for f in os.listdir('.') if f.endswith('.csv')])
+        zip_files = sorted(list(set([os.path.splitext(x)[0] for x in zip_files]) - set([os.path.splitext(x)[0] for x in csv_files])))
+        for file in progressbar(zip_files, redirect_stdout=True):
+            print(file + '.csv')
+            df = read_filter(file + '.zip', indices, writedisk=True)
+            # dfs.append(df)
+            df.to_csv(file + '.csv', index=False)
 
-    # Join and write
-    print('joining files')
-    dfs = pd.concat(dfs)
-    fileout = url.split('/')[-2] + '.csv'
-    dfs.to_csv(fileout)
+    # Join and write (in memory)
+    # if len(sys.argv) == 3 or sys.argv[3] == 'join':
+    #     print('joining files...')
+    #     dfs = pd.concat(dfs)
+    #     fileout = url.split('/')[-2] + '.csv'
+    #     dfs.to_csv(fileout)
+
+    # Join and write (in disk)
+    if len(sys.argv) == 3 or sys.argv[3] == 'join':
+        print('joining files...')
+        dfs = []
+        csv_files = sorted([f for f in os.listdir('.') if f.endswith('.csv')])
+        for file in progressbar(csv_files, redirect_stdout=True):
+            print(file)
+            dfs.append(pd.read_csv(file))
+
+        full_df = pd.concat(dfs)
+        full_df.to_csv(file + '.csv', index=False)
