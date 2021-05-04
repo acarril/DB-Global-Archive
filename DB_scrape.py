@@ -57,21 +57,21 @@ def download(url, filename):
                 sys.stdout.flush()
     sys.stdout.write('\n')
 
+def getSoup(sub_url):
+    base_url = 'https://vpn.princeton.edu/https-443/'
+    url = base_url + sub_url.replace('https://', '')
+    cj = browser_cookie3.firefox()
+    r = requests.get(url, cookies = cj)
+    return bs4.BeautifulSoup(r.text, 'html.parser')
+
 # Create index list for relevant columns
 indices = [1, 2, 3, 6, 14, 20] + list(range(45, 62)) + [74, 76, 84, 90, 91, 116, 117, 130, 131]
 indices = [x - 1 for x in indices]  # because python is 0-indexed
-
-# Request list index
-# Index URL is 'https://dss2.princeton.edu/dandb/dandbarchives/LINK/<subdir>/'
-base_url = 'https://vpn.princeton.edu/https-443/'
-url = base_url + sys.argv[1].replace('https://', '')
-# url = 'https://vpn.princeton.edu/https-443/dss2.princeton.edu/dandb/dandbarchives/LINK/EU/'
-cj = browser_cookie3.firefox()
-r = requests.get(url, cookies = cj)
-soup = bs4.BeautifulSoup(r.text, 'html.parser')
+sub_url = sys.argv[1]
 
 # Download, filter and join files in memory
 if not writedisk:
+    soup = getSoup(sub_url)
     dfs = []
     for l in progressbar(soup.find_all(lambda tag: tag.name=='a' and tag['href'].endswith('.zip'))):
         filename = l['href']
@@ -90,6 +90,7 @@ if writedisk:
     # Download
     if len(sys.argv) == 3 or sys.argv[3] == 'download':
         print('downloading files...')
+        soup = getSoup(sub_url)
         for l in soup.find_all(lambda tag: tag.name=='a' and tag['href'].endswith('.zip')):
             filename = l['href']
             if os.path.isfile(filename):
